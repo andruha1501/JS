@@ -1,39 +1,24 @@
-var f = true;
-var r = true;
-var v = true;
+var wasclickArrow = wasclickDownload = wasMouseenter = wasclickTime = true;
 var target = document.querySelector("body");
-var j = 0;
-var str;
-var i; //856;
-var ide;
-var clo;
-var q = true;
-var mouse = true;
-var sec = true;
-var coun = 0;
+var percentOverload;
+var i;
+var idVideo;
+var timw;
 var hid_ele;
-var zxc;
-var t;
-var id;
-var videos = document.querySelectorAll('._5asm') ;
-var fun = function (event) {
-    //debugger;
-     t=event.target; 
-     id = t.parentElement.parentElement.getAttribute("href");
-     for (z = 0; z < videos.length; z++) {
-        if (videos[z].getAttribute("href") === id) {
-           
-         //console.log(t.parentElement.parentElement);
-         i=z;
-         document.body.removeEventListener('click', fun);
-         break;
-     }
+var numberDownloadVideo = 0;
+var seconds;
+var allVideos = document.querySelectorAll('._5asm');
+
+var searchIdVideo = function(event) {
+    for (z = 0; z < allVideos.length; z++) {
+        if (allVideos[z].getAttribute("href") === event.target.parentElement.parentElement.getAttribute("href")) {
+            i = z;
+            document.body.removeEventListener('click', searchIdVideo);
+            break;
         }
-    
+    }
 }
-
-document.body.addEventListener('click', fun)
-
+document.body.addEventListener('click', searchIdVideo)
 
 var fireEvent = function(element, event) {
     var evt;
@@ -42,12 +27,9 @@ var fireEvent = function(element, event) {
     }
     element = (isString(element)) ? document.getElementById(element) : element;
     if (document.createEventObject) {
-        // dispatch for IE
         evt = document.createEventObject();
         return element.fireEvent('on' + event, evt)
-    }
-    else {
-        // dispatch for firefox + others
+    } else {
         evt = document.createEvent("HTMLEvents");
         evt.initEvent(event, true, true); // event type,bubbling,cancelable
         return !element.dispatchEvent(evt);
@@ -55,144 +37,108 @@ var fireEvent = function(element, event) {
 }
 
 function Pause() {
-    var pause = document.getElementById(ide);
-    //debugger;
+    var pause = document.getElementById(idVideo);
     pause.click();
-    console.log("pause");    
+    console.log("pause");
 }
 
 function clickSmallVideo() {
-  var x = document.querySelectorAll('._5asm')[i];
-  x.click()
-  console.log("click small video");
+    var smallVideo = document.querySelectorAll('._5asm')[i];
+    smallVideo.click()
+    console.log("click small video");
 }
 
 function clickTitleVideo() {
-   // debugger;
-  var titCl = document.querySelector('._5o2k');
-  titCl.click()
-  console.log("click Title Video");
+    var titleVideo = document.querySelector('._5o2k');
+    titleVideo.click()
+    console.log("click Title Video");
 }
 
-function Save() {
-  var arrow = document.getElementsByClassName('sf-feed')[0];
-  arrow.click();
-  arrow.click();
-  console.log("i = "+i);
+function clickArrow() {
+    var arrow = document.getElementsByClassName('sf-feed')[0];
+    arrow.click();
+    arrow.click();
+    console.log("i = " + i);
 }
 
-function Save2() {
-  var saveV = document.getElementsByClassName('sf-menu-item')[0]; 
-  saveV.click();
-  console.log("save")
-   i--;
-   zxc++;
+function clickDownload() {
+    var downloadVideo = document.getElementsByClassName('sf-menu-item')[0];
+    downloadVideo.click();
+    console.log("clickArrow")
+    i--;
+    numberDownloadVideo++;
+    console.log("download = " + numberDownloadVideo)
 }
 
 function Close() {
-    var c = document.querySelectorAll('._5tl7')[0];
-    c.click();
-    //debugger;
-    
+    var closeVideo = document.querySelectorAll('._5tl7')[0];
+    closeVideo.click();
 }
 
-function clickClock(tag) {
-
-    var clock = tag.children[0].children[1].children[0].children[0].children[2].children[0];
-    clock.click();
-    return clock;
+function clickTime(tag) {
+    var time = tag.children[0].children[1].children[0].children[0].children[2].children[0];
+    time.click();
+    return time;
 }
 
 // create an observer instance
 var observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) { 
-        if (mutation.target.tagName === "VIDEO" && mouse && !mutation.target.classList.contains('hidden_elem')) {
-            ide = mutation.target.id;
+    mutations.forEach(function(mutation) {
+        if (wasMouseenter && !mutation.target.classList.contains('hidden_elem') && mutation.target.tagName === "VIDEO") {
+            idVideo = mutation.target.id;
             hid_ele = mutation.target;
-            fireEvent(ide,"mouseenter");
-            mouse = false;
-           
-          console.log('mouse');
+            fireEvent(idVideo, "mouseenter");
+            wasMouseenter = false;
+            console.log('wasMouseenter');
         }
 
-    
         if (mutation.target.classList.contains("_23if")) {
-           
-           clickTitleVideo();
-
-
-          } 
-
-        if (mutation.target.classList.contains("_11q2") && sec) {  //_4ubd _3tsq _11q2 _3htz
-            sec = false;
-            clo = clickClock(mutation.target);
-            console.log("click on clock");
+            clickTitleVideo();
         }
 
-        if (mutation.removedNodes.length !== 0) { //&& mutation.removedNodes[0].classList.contains("hidden_elem") )
+        if (wasclickTime && mutation.target.classList.contains("_11q2")) {
+            wasclickTime = false;
+            timw = clickTime(mutation.target);
+            console.log("click on time");
+        }
+
+        if (mutation.removedNodes.length !== 0) {
             if (mutation.target.classList.contains("hidden_elem")) {
-                //debugger;
-               
-                f = r = mouse = sec = true;
-                coun = 0;
+                wasclickArrow = wasclickDownload = wasMouseenter = wasclickTime = true;
                 console.log('reset');
+                var pusk = setTimeout(clickSmallVideo, 2000);
+            }
+        }
 
-                var pusk = setTimeout(clickSmallVideo,2000);
+        if (wasclickArrow && mutation.target.classList.contains("_gn4") && !hid_ele.classList.contains('hidden_elem')) { // 
+            Pause();
+            percentOverload = mutation.target.style.width.slice(0, -1);
+            seconds = timw.innerHTML.slice(3);
+            if (percentOverload > 5.0 && seconds > 2) {
+                wasclickArrow = false;
+                clickArrow();
             }
         }
 
 
-       
-        
-        if (mutation.target.classList.contains("_gn4")  && f && !hid_ele.classList.contains('hidden_elem')) {
-           // debugger;
-            //coun++;
-           // console.log(coun);
-           
-                
-                Pause();
-                //debugger;
-                str = mutation.target.style.width.slice(0, -1);  
-                str1 = clo.innerHTML.slice(3); 
-                //console.log(str1);      
-                if (str > 5.0 && str1 > 2) {                       
-                    f = false;
-                    Save();
-                   
-                }
-        }
-          
-        
-        if (mutation.target.title === "video/mp4" && r) {
-            r = false;
-            var mb = mutation.target.innerHTML.slice(0, -3);
-            if (mb > 0) {
-                Save2();
-                // console.log(mb);
+        if (wasclickDownload && mutation.target.title === "video/mp4") {
+            var sizeVideo = mutation.target.innerHTML.slice(0, -3);
+            if (sizeVideo > 0) {
+                clickDownload();
                 Close();
+                wasclickDownload = false;
             }
         }
-            
-            
     });
 });
 
 // configuration of the observer
-var config = { attributes: true, childList: true, subtree: true, attributeOldValue: true  };
+var config = {
+    attributes: true,
+    childList: true,
+    subtree: true,
+    attributeOldValue: true
+};
 
 // pass in the target node, as well as the observer options
 observer.observe(target, config);
-
-
-// var str = mutation.target.classList.contains("_gn4").outerHTML;
-
-// var str = +mutation.target.style.width;
-
-//var pusk = setInterval(clickSmallVideo, 20000);
-
-
-
-
-
-
-
